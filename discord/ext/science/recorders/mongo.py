@@ -1,0 +1,16 @@
+from motor import motor_tornado
+
+from .base import BaseRecorder
+from ..op import OpDetails
+
+
+class MongoRecorder(BaseRecorder):
+    async def __init__(self, database_url: str):
+        self.db = motor_tornado.MotorClient(database_url)
+
+    async def start(self): ...
+    async def end(self): ...
+
+    async def last_events_id(self): ...
+    async def save_events(self, name: str, payload: dict, *, unknown=False): ...
+    async def save_packets(self, op_code: str, details: OpDetails): ...

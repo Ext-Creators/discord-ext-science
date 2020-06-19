@@ -11,6 +11,7 @@ with open('README.md', encoding='utf-8') as f:
 # basically install databases if they want it.
 extras_require = {
     'databases': 'databases',
+    'mongo': 'motor==2.1.0',
 }
 
 setup(
