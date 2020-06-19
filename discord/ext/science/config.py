@@ -1,16 +1,17 @@
 import typing
 from dataclasses import dataclass
 
-from .flags import EventFlags
+from .flags import EventFlags, OpFlags
 from .gateway import BunsenBurner
-from .snooper import Analyst
+from .snoopy import Analyst
 from .recorders.base import BaseRecorder
 
 
 @dataclass
 class Configuration:
     recorder: BaseRecorder
-    events: EventFlags = EventFlags.all()
+    event_flags: EventFlags = EventFlags.all()
+    op_flags: OpFlags = OPFlags.all()
     gw_cls: BunsenBurner = BunsenBurner
     anal_cls: Analyst = Analyst
 

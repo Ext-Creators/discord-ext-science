@@ -19,8 +19,10 @@ class _auto_value:
 _GLOBAL_AUTO_VALUE = _auto_value()
 
 
-def auto(doc=None):
+def auto(doc=None, *, last=False):
     _bit = 1 << _GLOBAL_AUTO_VALUE
+    if last:
+        _GLOBAL_AUTO_VALUE.reset()
 
     def pred(self):
         return _bit
@@ -55,12 +57,7 @@ class propmethod:
             return
 
 
-@fill_with_flags()
-class EventFlags(BaseFlags):
-    def __init__(self, **kwargs):
-        _GLOBAL_AUTO_VALUE.reset()
-        super().__init__(**kwargs)
-
+class BaseScienceFlags(BaseFlags):
     @propmethod
     def all(cls):
         bits = max(cls.VALID_FLAGS.values()).bit_length()
@@ -70,6 +67,9 @@ class EventFlags(BaseFlags):
     def none(cls):
         return cls.DEFAULT_VALUE
 
+
+@fill_with_flags()
+class EventFlags(BaseScienceFlags):
     @propmethod
     def guilds(cls):
         return 127
@@ -151,4 +151,21 @@ class EventFlags(BaseFlags):
     reaction_remove = auto('The on_reaction_remove event')
     reaction_clear = auto('The on_reaction_clear event')
     
-    typing = auto('The on_typing event')
+    typing = auto('The on_typing event', last=True)
+
+
+@fill_with_flags()
+class OpFlags(BaseScienceFlags):
+    DISPATCH = auto('An event sent to the Client (ie. READY).')
+    HEARTBEAT = auto('To keep the connection alive.')
+    IDENTIFY = auto('When a new session is started.')
+    PRESENCE = auto('When you update your presence.')
+    VOICE_STATE = auto('When a new connection is started to a voice guild.')
+    VOICE_PING = auto('Checks the ping time to a voice guild.')
+    RESUME = auto('When an existing connection is resumed.')
+    RECONNECT = auto('When the client is told to reconnect.')
+    REQUEST_MEMBERS = auto('When you ask for a full member list of a guild.')
+    INVALIDATE_SESSION = auto('When the client is told to invalidate the session and re-IDENTIFY.')
+    HELLO = auto('When the client is told the heartbeat interval.')
+    HEARTBEAT_ACK = auto('When the heartbeat received is confirmed.')
+    GUILD_SYNC = auto('When a guild sync is requested.', last=True)

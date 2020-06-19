@@ -17,8 +17,8 @@ You may want to manually install [`databases`](https://github.com/encode/databas
 ## Examples
 
 ```py
-from science import Scientist, EventFlags, Configuration
-from science.recorders.databases import DatabasesRecorder
+from discord.ext.science import Scientist, EventFlags, Configuration
+from discord.ext.science.recorders.databases import DatabasesRecorder
 import logging
 
 logging.basicConfig(filename='log.log', filemode='w', level=logging.DEBUG)
@@ -30,5 +30,5 @@ config = Configuration(
 client = Scientist(config=config)
 
 
-client.run('NzE3MDM0MDE2ODM4MTIzNjYy.XuuC3A.vffXDcn6MPA_WAnZKAbxQo2wLL0')
+client.run('TOKEN')
 ```

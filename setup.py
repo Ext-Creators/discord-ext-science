@@ -3,12 +3,12 @@ from setuptools import setup
 with open('requirements.txt') as f:
     requirements = f.read().splitlines()
 
-version = '0.1.1'
+version = '0.2.0'
 
 with open('README.md', encoding='utf-8') as f:
     readme = f.read()
 
-# basically install databases with the correct driver if they want it.
+# basically install databases if they want it.
 extras_require = {
     'databases': 'databases',
 }
@@ -19,7 +19,10 @@ setup(
     python_requires='>=3.7.0',
     url='https://github.com/NCPlayz/discord-ext-science',
     version=version,
-    packages=['discord/ext/science'],
+    packages=[
+        'discord/ext/science',
+        'discord/ext/science/recorders',
+        ],
     license='MIT',
     description='A simple event logger for discord.py.',
     long_description=readme,

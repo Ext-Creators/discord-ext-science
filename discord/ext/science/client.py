@@ -14,7 +14,7 @@ class Scientist(Client):
         self.config: Configuration = kwargs.pop('config')
         logger.debug('Initiated Scientist with %s.', self.config)
 
-        self.analyst = self.config.anal_cls(self.config.recorder)
+        self.analyst = self.config.anal_cls(self.config.recorder, self.config.event_flags, self.config.op_flags)
         super().__init__(*args, **kwargs)
     
     def dispatch(self, event, *args, **kwargs):
@@ -23,9 +23,13 @@ class Scientist(Client):
     
     async def start(self, *args, **kwargs):
         await self.config.recorder.start()
+        next_id = await self.config.recorder.last_events_id() + 1
+        logger.debug("The next ID for the 'events' table is %s", next_id)
         await super().start(*args, **kwargs)
     
     async def close(self):
+        curr_id = await self.config.recorder.last_events_id()
+        logger.debug("The final ID for the 'events' table is %s", next_id)
         await self.config.recorder.end()
         await super().close()
     
