@@ -2,6 +2,8 @@
 
 A simple event logger for [discord.py](https://github.com/Rapptz/discord.py).
 
+> View the Changelog [here](https://github.com/NCPlayz/discord-ext-science/blob/master/CHANGELOG.md)!
+
 ## Install
 
 ```sh
