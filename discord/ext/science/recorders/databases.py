@@ -38,18 +38,18 @@ class DatabasesRecorder(BaseRecorder):
     def __init__(self, database_url: str):
         self.db: Database = Database(database_url)
     
-    async def start(self):
+    async def start(self) -> None:
         await self.db.connect()
     
-    async def end(self):
+    async def end(self) -> None:
         await self.db.disconnect()
     
-    async def last_events_id(self):
+    async def last_events_id(self) -> int:
         query = packets.select().order_by(packets.c.id.desc()).limit(1)
         packets_id = await self.db.fetch_val(query)
         return packets_id
 
-    async def save_events(self, name: str, payload: dict, *, unknown=False):
+    async def save_events(self, name: str, payload: dict, *, unknown: bool=False) -> None:
         query = events.insert().values(
             time=datetime.datetime.utcnow(),
             name=name,
@@ -58,7 +58,7 @@ class DatabasesRecorder(BaseRecorder):
         )
         await self.db.execute(query)
     
-    async def save_packets(self, op_code: int, details: OpDetails):
+    async def save_packets(self, op_code: int, details: OpDetails) -> None:
         query = packets.insert().values(
             time=datetime.datetime.utcnow(),
             op_code=op_code,

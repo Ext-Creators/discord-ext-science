@@ -1,4 +1,5 @@
-import inspect
+import typing
+
 from discord.flags import fill_with_flags, flag_value, BaseFlags
 
 __all__ = (
@@ -8,23 +9,23 @@ __all__ = (
 class _auto_value:
     _CURR_VALUE = 0
 
-    def __rlshift__(self, val):
+    def __rlshift__(self, val) -> int:
         ret = val << self._CURR_VALUE
         self._CURR_VALUE += 1
         return ret
 
-    def reset(self):
+    def reset(self) -> None:
         self._CURR_VALUE = 0
 
 _GLOBAL_AUTO_VALUE = _auto_value()
 
 
-def auto(doc=None, *, last=False):
+def auto(doc=None, *, last=False) -> flag_value:
     _bit = 1 << _GLOBAL_AUTO_VALUE
     if last:
         _GLOBAL_AUTO_VALUE.reset()
 
-    def pred(self):
+    def pred(self) -> int:
         return _bit
     
     pred.__doc__ = doc
@@ -33,7 +34,6 @@ def auto(doc=None, *, last=False):
 class propmethod:
     def __init__(self, func):
         self._func = func
-        self._owner = None
         self._flag = None
     
     def __get__(self, instance, owner):

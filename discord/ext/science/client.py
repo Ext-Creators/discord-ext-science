@@ -17,26 +17,26 @@ class Scientist(Client):
         self.analyst = self.config.anal_cls(self.config.recorder, self.config.event_flags, self.config.op_flags)
         super().__init__(*args, **kwargs)
     
-    def dispatch(self, event, *args, **kwargs):
+    def dispatch(self, event, *args, **kwargs) -> None:
         self._schedule_event(self.analyst.log, 'science_logging', event, *args, **kwargs)
         super().dispatch(event, *args, **kwargs)
     
-    async def start(self, *args, **kwargs):
+    async def start(self, *args, **kwargs) -> None:
         await self.config.recorder.start()
         next_id = await self.config.recorder.last_events_id() + 1
         logger.debug("The next ID for the 'events' table is %s", next_id)
         await super().start(*args, **kwargs)
     
-    async def close(self):
+    async def close(self) -> None:
+        await super().close()
         curr_id = await self.config.recorder.last_events_id()
         logger.debug("The final ID for the 'events' table is %s", next_id)
         await self.config.recorder.end()
-        await super().close()
     
-    async def _connect(self):
+    async def _connect(self) -> None:
         cls = self.config.gw_cls
         coro = cls.from_client(self, shard_id=self.shard_id)
-        self.ws = await asyncio.wait_for(coro, timeout=180.0)
+        self.ws: cls = await asyncio.wait_for(coro, timeout=180.0)
         while True:
             try:
                 await self.ws.poll_event()

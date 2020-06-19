@@ -1,5 +1,6 @@
 import time
 import logging
+import typing
 from functools import wraps
 
 from .recorders.base import BaseRecorder
@@ -64,14 +65,14 @@ class Analyst:
         await handler(*args, **kwargs)
     
     @common_table('events', unknown=True)
-    async def on_unknown_event(self, event_name: str, payload: dict):
+    async def on_unknown_event(self, event_name: str, payload: dict) -> typing.Tuple[str, dict]:
         if type(payload) is dict:
             return event_name, payload
 
     # TODO: log events
 
     @common_table('packets')
-    async def on_socket_response(self, payload: dict):
+    async def on_socket_response(self, payload: dict) -> typing.Optional[typing.Tuple[int, OpDetails]]:
         op_code = payload['op']
         
         handler = getattr(self, 'on_socket_op_{}'.format(op_code), None)
@@ -85,7 +86,7 @@ class Analyst:
             return op_code, details
     
     @common_table('packets')
-    async def on_socket_send(self, payload: dict):
+    async def on_socket_send(self, payload: dict) -> typing.Optional[typing.Tuple[int, OpDetails]]:
         op_code = payload['op']
 
         # TODO: propagate
@@ -96,7 +97,7 @@ class Analyst:
         if should_log:
             return op_code, details
     
-    async def on_socket_op_0(self, payload: dict):
+    async def on_socket_op_0(self, payload: dict) -> OpDetails:
         event_name = payload['t']
 
         handler = getattr(self, 'on_socket_{}'.format(event_name), None)
@@ -106,10 +107,10 @@ class Analyst:
 
         return OpDetails(inbound=True, event_name=event_name, payload=payload)
     
-    async def on_socket_READY(self, payload):
+    async def on_socket_READY(self, payload) -> None:
         duration = self.ready_timer.end()
         logger.debug("Received READY event {:,.2f} milliseconds after connection.".format(duration * 1000))
     
-    async def on_socket_RESUME(self, payload):
+    async def on_socket_RESUME(self, payload) -> None:
         duration = self.ready_timer.end()
         logger.debug("Received RESUME event {:,.2f} milliseconds after reconnection.".format(duration * 1000))
