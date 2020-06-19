@@ -2,3 +2,6 @@ _testing/
 __pycache__/
 venv/
 .vscode/
+build/
+*.egg-info/
+dist/
