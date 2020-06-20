@@ -1,9 +1,9 @@
-from typing import List, Callable
+from typing import List, Callable, Tuple
 from dataclasses import dataclass
 
-from .flags import OPFlags
+from .flags import OpFlags
 
-OP_DICT: List[Callable[[OPFlags], bool]]= [
+OP_DICT: List[Callable[[OpFlags], bool]]= [
     lambda opflag: opflag.DISPATCH,
     lambda opflag: opflag.HEARTBEAT,
     lambda opflag: opflag.IDENTIFY,
