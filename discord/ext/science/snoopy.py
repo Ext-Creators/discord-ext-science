@@ -3,6 +3,9 @@ import logging
 import typing
 from functools import wraps
 
+from aiohttp.typedefs import StrOrURL
+from aiohttp.client_reqrep import ClientResponse
+
 from .recorders.base import BaseRecorder
 from .flags import EventFlags, OpFlags
 from .op import OP_DICT, OpDetails
@@ -15,25 +18,25 @@ class ReadyTimer:
     end_time: float
 
     def start(self):
-        self.start_time = time.time()
+        self.start_time = time.monotonic()
     
     def end(self) -> float:
-        self.end_time = time.time()
+        self.end_time = time.monotonic()
         return self.end_time - self.start_time
 
 def common_table(table, *, unknown=False):
     def wrapper(func):
         @wraps(func)
-        async def wrapped(self, *args):
+        async def wrapped(self, *args, **kwargs) -> None:
             save = getattr(self.recorder, 'save_{}'.format(table))
-            args = await func(self, *args)
+            args = await func(self, *args, **kwargs)
             if args is None:
                 return
             
             if unknown:
-                await save(*args, unknown=unknown)
+                await save(*args, **kwargs, unknown=unknown)
             else:
-                await save(*args)
+                await save(*args, **kwargs)
         return wrapped
     return wrapper
 
@@ -107,10 +110,18 @@ class Analyst:
 
         return OpDetails(inbound=True, event_name=event_name, payload=payload)
     
-    async def on_socket_READY(self, payload) -> None:
+    async def on_socket_READY(self, payload: dict) -> None:
         duration = self.ready_timer.end()
         logger.debug("Received READY event {:,.2f} milliseconds after connection.".format(duration * 1000))
     
-    async def on_socket_RESUME(self, payload) -> None:
+    async def on_socket_RESUME(self, payload: dict) -> None:
         duration = self.ready_timer.end()
         logger.debug("Received RESUME event {:,.2f} milliseconds after reconnection.".format(duration * 1000))
+
+    @common_table('requests')
+    async def http_request(self, method: str, str_or_url: StrOrURL, **kwargs: dict) -> typing.Tuple[typing.Any, ...]:
+        return method, str_or_url, kwargs
+    
+    @common_table('requests')
+    async def http_request_error(self, method: str, str_or_url: StrOrURL, **kwargs: dict) -> typing.Tuple[typing.Any, ...]:
+        return method, str_or_url, kwargs

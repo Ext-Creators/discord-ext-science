@@ -16,6 +16,7 @@ class Scientist(Client):
 
         self.analyst = self.config.anal_cls(self.config.recorder, self.config.event_flags, self.config.op_flags)
         super().__init__(*args, **kwargs)
+        self.http = self.config.httpclient_cls.from_http_client(self.http, self.config.session_cls, self.analyst)
     
     def dispatch(self, event, *args, **kwargs) -> None:
         self._schedule_event(self.analyst.log, 'science_logging', event, *args, **kwargs)
@@ -29,9 +30,10 @@ class Scientist(Client):
     
     async def close(self) -> None:
         await super().close()
-        curr_id = await self.config.recorder.last_events_id()
-        logger.debug("The final ID for the 'events' table is %s", next_id)
-        await self.config.recorder.end()
+        if self.config.recorder.started:
+            curr_id = await self.config.recorder.last_events_id()
+            logger.debug("The final ID for the 'events' table is %s", curr_id)
+            await self.config.recorder.end()
     
     async def _connect(self) -> None:
         cls = self.config.gw_cls

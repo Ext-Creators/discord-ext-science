@@ -35,14 +35,17 @@ packets = sqlalchemy.Table(
 
 
 class DatabasesRecorder(BaseRecorder):
+    started: bool = False
     def __init__(self, database_url: str):
         self.db: Database = Database(database_url)
     
     async def start(self) -> None:
         await self.db.connect()
+        self.started = True
     
     async def end(self) -> None:
         await self.db.disconnect()
+        self.started = False
     
     async def last_events_id(self) -> int:
         query = packets.select().order_by(packets.c.id.desc()).limit(1)
@@ -67,3 +70,6 @@ class DatabasesRecorder(BaseRecorder):
             inbound=details.inbound,
         )
         await self.db.execute(query)
+
+    async def save_requests(self, *args, **kwargs) -> None:
+        # TODO: log properly
