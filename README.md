@@ -1,4 +1,9 @@
 # science
+![package](https://img.shields.io/pypi/v/discord-ext-science.svg)
+![versions](https://img.shields.io/pypi/pyversions/discord-ext-science.svg)
+![dependencies](https://img.shields.io/librariesio/github/NCPlayz/discord-ext-science.svg)
+![license](https://img.shields.io/pypi/l/discord-ext-science.svg)
+![cloned](https://img.shields.io/pypi/dm/discord-ext-science.svg)
 
 A simple event logger for [discord.py](https://github.com/Rapptz/discord.py).
 
