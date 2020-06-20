@@ -11,7 +11,7 @@ from .recorders.base import BaseRecorder
 class Configuration:
     recorder: BaseRecorder
     event_flags: EventFlags = EventFlags.all()
-    op_flags: OpFlags = OPFlags.all()
+    op_flags: OpFlags = OpFlags.all()
     gw_cls: BunsenBurner = BunsenBurner
     anal_cls: Analyst = Analyst
 
